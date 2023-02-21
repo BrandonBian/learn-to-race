@@ -1,0 +1,11 @@
+(Set up environment)
+conda install -c pytorch torchvision
+pip install chardet
+---
+(set up remote for l2-lab after mirroring)
+git remote add l2r-lab https://github.com/learn-to-race/l2r-lab
+git remote update
+---
+(Running with SUDO in CMD)
+(Using PyCharm seems to be running correctly without the need of SUDO)
+sudo -E env PATH=$PATH python -m scripts.main
