@@ -11,5 +11,5 @@ conda install -c conda-forge jsonpickle
 conda install -c conda-forge opencv
 
 --- Running ---
-sudo -E /home/brandon/.conda/envs/l2r/bin/python
+sudo -E /home/brandon/.conda/envs/l2r/bin/python -m scripts.main
 
