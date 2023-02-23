@@ -114,6 +114,8 @@ class VAE(BaseEncoder, torch.nn.Module):
     def decode(self, z):
         z = self.fc3(z)
         return self.decoder(z)
+        # Output: (batch_size, C, H, W)
+
 
     def forward(self, x):
         # expects (N, H, W, C)

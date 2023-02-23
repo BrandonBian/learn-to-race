@@ -1,15 +1,7 @@
-import cv2
-import tqdm
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import logging
-
 from src.config.yamlize import yamlize
-from src.constants import DEVICE
 from src.encoders.base import BaseEncoder
-from src.encoders.transforms.preprocessing import crop_resize_center
 
 
 @yamlize
@@ -22,7 +14,6 @@ class RandomEncoder(BaseEncoder, torch.nn.Module):
             image_height: int = 42,
             image_width: int = 144,
             z_dim: int = 32,
-            load_checkpoint_from: str = "",
     ):
         super().__init__()
 
@@ -31,11 +22,17 @@ class RandomEncoder(BaseEncoder, torch.nn.Module):
         self.im_w = image_width
         self.z_dim = z_dim
 
-    def encode(self, x: np.ndarray, device=DEVICE) -> torch.Tensor:
+    def encode(self, x: np.ndarray) -> torch.Tensor:
         # assume x is RGB image with shape (H, W, 3)
         v = torch.randn(1, self.z_dim)
         return v
 
-    def decode(self, z):
-        z = self.fc3(z)
-        return self.decoder(z)
+    def decode(self, z: torch.Tensor) -> torch.Tensor:
+        # Generate random noise tensor of shape (batch_size, C, H, W)
+        noise = torch.randn(z.shape[0], self.im_c, self.im_h, self.im_w)
+
+        # Resize the noise tensor to the desired image size
+        output = torch.nn.functional.interpolate(noise, size=(self.im_h, self.im_w))
+
+        # Output (1, im_c, im_h, im_w)
+        return output
