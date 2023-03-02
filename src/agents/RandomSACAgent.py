@@ -14,6 +14,7 @@ from src.utils.utils import ActionSample
 from src.constants import DEVICE
 from src.encoders.random import RandomEncoder
 
+RANDOM_ACTION = True
 
 @yamlize
 class RandomSACAgent(BaseAgent):
@@ -99,19 +100,26 @@ class RandomSACAgent(BaseAgent):
         # Until start_steps have elapsed, randomly sample actions
         # from a uniform distribution for better exploration. Afterwards,
         # use the learned policy.
-        action_obj = ActionSample()
-        if self.t > self.steps_to_sample_randomly:
-            z = self.encoder.encode(obs)
-            a = self.actor_critic.act(z.to(DEVICE), self.deterministic)
-            a = a  # numpy array...
-            action_obj.action = a
-            self.record["transition_actor"] = "learner"
+        if not RANDOM_ACTION:
+            print("Action Selection")
+            action_obj = ActionSample()
+            if self.t > self.steps_to_sample_randomly:
+                z = self.encoder.encode(obs)
+                a = self.actor_critic.act(z.to(DEVICE), self.deterministic)
+                a = a  # numpy array...
+                action_obj.action = a
+                self.record["transition_actor"] = "learner"
+            else:
+                a = self.action_space.sample()
+                action_obj.action = a
+                self.record["transition_actor"] = "random"
+            self.t = self.t + 1
+            return action_obj
         else:
-            a = self.action_space.sample()
-            action_obj.action = a
-            self.record["transition_actor"] = "random"
-        self.t = self.t + 1
-        return action_obj
+            print("Random Action")
+            action_obj = ActionSample()
+            action_obj.action = self.action_space.sample()
+            return action_obj
 
     def register_reset(self, obs):
         """
