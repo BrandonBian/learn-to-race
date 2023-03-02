@@ -36,3 +36,7 @@ class RandomEncoder(BaseEncoder, torch.nn.Module):
 
         # Output (1, im_c, im_h, im_w)
         return output
+
+    def update(self, data):
+        # Implementation to update encoder weights based on observed data
+        pass
